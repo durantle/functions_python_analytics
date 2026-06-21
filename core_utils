@@ -24,4 +24,71 @@ def caract_unit(bd: pd.DataFrame):
 
     return bd
 
+# ---------------------------------------------------------
+
+def agrupe(base: pd.DataFrame, colunaagrupe: list, colunacalc: str) -> pd.DataFrame:
+    """
+    Agrupa um DataFrame por colunas específicas e aplica cálculos estatísticos sobre uma coluna numérica.
+
+    Parâmetros
+    ----------
+    base : pd.DataFrame
+        DataFrame de entrada contendo os dados.
+    colunaagrupe : list
+        Lista de colunas que serão usadas para o agrupamento.
+    colunacalc : str
+        Nome da coluna numérica sobre a qual os cálculos serão realizados.
+
+    Retorno
+    -------
+    pd.DataFrame
+        DataFrame agrupado com as seguintes colunas calculadas:
+        - sum   : soma dos valores
+        - mean  : média
+        - median: mediana
+        - min   : mínimo
+        - max   : máximo
+        - count : contagem
+        - std   : desvio padrão
+        - var   : variância
+        - prod  : produto dos valores
+        - first : primeiro valor
+        - last  : último valor
+
+    Exceções
+    --------
+    NameError
+        Lançada se alguma coluna informada não existir na base.
+    """
+
+    import pandas as pd
+
+    # Verificações de tipos
+    if not isinstance(base, pd.DataFrame) or not isinstance(colunaagrupe, list) or not isinstance(colunacalc, str):
+        raise TypeError("Parâmetros inválidos: base deve ser DataFrame, colunaagrupe uma lista e colunacalc uma string.")
+
+    # Verificação de colunas
+    for col in colunaagrupe + [colunacalc]:
+        if col not in base.columns:
+            raise NameError(f"A coluna '{col}' não existe na base. Colunas disponíveis: {list(base.columns)}")
+
+    # Converter coluna calculável para numérica
+    base[colunacalc] = pd.to_numeric(base[colunacalc], errors='coerce')
+
+    # Realizar agrupamento e cálculos
+    gp = base.groupby(colunaagrupe).agg(
+        colgroup_sum   = (colunacalc, 'sum'),
+        colgroup_mean  = (colunacalc, 'mean'),
+        colgroup_median= (colunacalc, 'median'),
+        colgroup_min   = (colunacalc, 'min'),
+        colgroup_max   = (colunacalc, 'max'),
+        colgroup_count = (colunacalc, 'count'),
+        colgroup_std   = (colunacalc, 'std'),
+        colgroup_var   = (colunacalc, 'var'),
+        colgroup_prod  = (colunacalc, 'prod'),
+        colgroup_first = (colunacalc, 'first'),
+        colgroup_last  = (colunacalc, 'last')
+    ).reset_index(drop=False)
+
+    return gp
 
