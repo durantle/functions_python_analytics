@@ -1,1 +1,27 @@
+# Indentificador de caracteres das colunas do DataFrame
+def caract_unit(bd: pd.DataFrame):
+    import pandas as pd
+    import os
+    caminho = os.getcwdb()
+    caminho = os.path.join("C:\\Users\\55119\\OneDrive\\Área de Trabalho", "view.xlsx")
+    colunas = sorted(bd.columns)
+    output = []
+    for coluna in colunas:
+        dados = bd[coluna].unique()
+        tipo = bd[coluna].dtype
+        dados = sorted([str(i) for i in dados])
+        caracteres = [[i for i in item] for item in dados]
+        caracteres = set(sorted([x for sub in caracteres for x in sub]))
+        caracteres = " ".join(caracteres)
+        output.append({"Coluna": coluna,
+                       "Caracteres": caracteres,
+                       "Natureza": tipo
+                       })
+        
+    bd = pd.DataFrame(output)
+    bd.to_excel(caminho)
+    os.startfile(caminho)
+
+    return bd
+
 
